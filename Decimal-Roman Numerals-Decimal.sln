@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31515.178
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{888888A0-9F3D-457C-B088-3A5042F75D52}") = "Decimal-Roman Numerals-Decimal", "Decimal-Roman Numerals-Decimal\Decimal-Roman Numerals-Decimal.pyproj", "{982E3534-2A01-4484-B036-36B727AD69ED}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{982E3534-2A01-4484-B036-36B727AD69ED}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{982E3534-2A01-4484-B036-36B727AD69ED}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F20DF9A2-C1DF-452B-A826-B6EC4DF1BEF9}
+	EndGlobalSection
+EndGlobal
