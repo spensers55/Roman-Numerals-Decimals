@@ -43,44 +43,54 @@ def getValOfChar(char): # used to convert roman numeral characters to decimal va
         return char
 # end of function
 
-def toNearest(val, nearest): # -+-+- NOTE THIS PART OF THIS PROGRAM DOESN'T WORK YET. MORE PROGRESS SOON -+-+-
-    tempCalc = val  # a temporary value to calculate how close we are without compromising the input value
-    currentNearest = nearest    # a variable that keeps track of how many of 'nearest' magnitude we need
-    negative = False
+def toNearest(val, nearest):
+    valCalc = val # create calculcation version of val
+    nearestVal = 0 # create return value for nearest
+
+    negative = False # negative checking to determine if we need to add or subtract
     if val < 0:
         negative = True
-        tempCalc *= -1
-    
-    # acquire breakdown value of nearest input
-    breakdown = 0 # breakdown value shows the unit this magnitude of roman numeral is built on
-    if nearest > 100:   # for example, determining prefixes/suffixes of a RN containing 'M' or 'D' requires counting
-                        # by 100s. Suffixes for values of this size require 100s to get as close as possible
-        breakdown = 100
-    elif nearest > 10:  # if the value is greater than 10, that means it is 100 or 50. that requires a bd of 10
-        breakdown = 10
-    else:               # if the value is greater than 1, that means it is 10 or 5. That requires a bd of 1
-        breakdown = 1
-    # end if/else
-    
-    while tempCalc > 0: # while loop to get into ball-park by subtracting numbers of 'nearest' magnitude. stops at 0
-        currentNearest += nearest   # add numbers of 'nearest' magnitude to tracker
-        tempCalc -= nearest # subtract from copy of input value
+        valCalc*=-1
 
-    if tempCalc == 0 or tempCalc > (breakdown * -1):   # if it matches or doesn't go below breakdown, instant return
-        if negative:
-            print("Nearest to {0} is {1}".format(val, currentNearest*-1))
-            return currentNearest*-1
-        else:
-            print("Nearest to {0} is {1}".format(val, currentNearest))
-            return currentNeaest
-    else:   # if it's not within 1 breakdown of nearest, we went too far
-        if negative:
-            print("Nearest to {0} is {1}".format(val, (currentNearest-nearest)*-1))
-            return (currentNearest - nearest)*-1
-        else:
-            print("Nearest to {0} is {1}".format(val, currentNearest-nearest))
-            return currentNearest - nearest # return previous nearest
-
+    if nearest == 1000: # if searching for nearest 1000, execute
+        while valCalc >= 900: # below 900, rn uses 500 value
+            nearestVal+=1000
+            valCalc -= 1000
+        print(valCalc)
+    # end nearest 1000
+    elif nearest == 500: # if searching for nearest 500
+        while valCalc >= 400 and not negative: # below 400, rn uses 100 value
+            nearestVal += 500
+            valCalc -=500
+        print(valCalc)
+    # end nearest 500
+    elif nearest == 100: # if searching for 100
+        while valCalc >= 90 or (negative and valCalc >= 40): # below 90, rn uses 50 value
+            nearestVal += 100
+            valCalc -=100
+        print(valCalc)
+    # end nearest 100
+    elif nearest == 50 and not negative: # if searching for nearest 50
+        while valCalc >= 40: # below 40, rn uses 10 value
+            nearestVal += 50
+            valCalc -=50
+        print(valCalc)
+    # end nearest 50
+    elif nearest == 10 or (negative and valCalc >= 4): # if searching for nearest 10
+        while valCalc >= 9: # below 9, rn uses 5 value
+            nearestVal += 10
+            valCalc -=10
+        print(valCalc)
+    # end nearest 10
+    elif nearest == 5: # if searching for nearest 5
+        while valCalc >= 4: # below 4, rn uses 1 value
+            nearestVal += 5
+            valCalc -=5
+        print(valCalc)
+    if negative:
+        return (nearestVal*-1)
+    else:
+        return nearestVal
 # end of function
 
 def decToRN(decimal): # Decimal to Roman Numeral [STUB]
@@ -159,6 +169,7 @@ def decToRN(decimal): # Decimal to Roman Numeral [STUB]
         else:
             decimal += 1
             RomanNumeral = "I" + RomanNumeral
+    return RomanNumeral
 # end of function
 
 def UI(): # UI logic [STUB]
