@@ -1,29 +1,48 @@
 # this program will convert Roman Numerals to Decimal and Decimal to Roman Numerals
 # RN2Dec - It will start counting from the end of the string of RN and add all numbers of equal or greater value
 #   it will subtract any numbers of lesser value
-# Dec2RN - it will start by taking the least precise value and associating it with a RN value
-#   it will then subtract that value from the decimal number and ensure that level of precision is removed
-#   if that level of precision persists, it will apply prefixes/suffixes as required
+# Dec2RN - it will divide the decimal by the highest level of precision to determine the number of characters must be placed
+#   it will repeat this with all levels of precision
+#   it will refine this numeral by injecting subtractive case where needed (i.e. IIII to IV)
 import tkinter
+import math
 
+mainScene = tkinter.Tk() #UI created as global
+decimalInput=tkinter.IntVar(mainScene) #UI element created as global
+romanNumeralInput=tkinter.StringVar(mainScene) #UI element created as global
+
+#Roman Numeral to Decimal
+#Accepts romanNumeral: a string containing a roman numeral input by the user
+#Returns finalValue: a variable containing a decimal number converted by this function
+#Other Returns currentVal: passes forward an error message to the calling function
 def rnToDec(romanNumeral): # Roman Numeral to Decimal
     currentLoc=len(romanNumeral)-1 # iterating thru the string starting at the end
     currentVal=0 # the value of the character at currentLoc
     previousVal=0 # the value of the largest previous character
     finalValue = 0 # the result: the decimal number that matches the roman numeral
+
     while currentLoc != -1: # until checked the whole string
         currentVal = getValOfChar(romanNumeral[currentLoc]) # function call to get numeric value
+
         if currentVal == romanNumeral[currentLoc]: # if it doesn't have a numerical value
             return currentVal # send problem forward
+
         if currentVal >= previousVal: # if current value is larger than previous,...
             previousVal=currentVal # match previous to new largest
             finalValue += currentVal # add new value to result
+
         if currentVal < previousVal: # if current value is less than previous,...
-            finalValue-=currentVal # subtract it off (it is a prefix)
+            finalValue-=currentVal # subtract it off (it is a subtractive)
+
         currentLoc-=1 # decrement iterator
+    #end while loop
     return finalValue
 # end of function
 
+#Get value of character
+#Accepts char: a variable containing 1 character (I, V, X, L, C, D, or M)
+#Returns static value: the numeric value associated with the character entered
+#Default Returns char: the character entered is returned as an error message
 def getValOfChar(char): # used to convert roman numeral characters to decimal values
     if(char == 'I' or char == 'i'):
         return 1
@@ -43,145 +62,82 @@ def getValOfChar(char): # used to convert roman numeral characters to decimal va
         return char
 # end of function
 
-def toNearest(val, nearest):
-    valCalc = val # create calculcation version of val
-    nearestVal = 0 # create return value for nearest
+# Decimal to Roman Numeral
+# Accepts decimal: a number in base 10 format entered by the user
+# Returns numeral: a number in roman numeral format converted by the function
+# Uses: math class
+def decToRN(decimal):
+    thousands = math.floor(decimal/1000) #use division to find quantity of 1000's
+    decimal %= 1000 #use modulus division to remove 1000's level of precision
 
-    negative = False # negative checking to determine if we need to add or subtract
-    if val < 0:
-        negative = True
-        valCalc*=-1
+    fhundreds = math.floor(decimal/500) #find if a 500 exists (there can only be 1)
+    decimal %= 500 # remove 500
 
-    if nearest == 1000: # if searching for nearest 1000, execute
-        while valCalc >= 900: # below 900, rn uses 500 value
-            nearestVal+=1000
-            valCalc -= 1000
-        print(valCalc)
-    # end nearest 1000
-    elif nearest == 500: # if searching for nearest 500
-        while valCalc >= 400 and not negative: # below 400, rn uses 100 value
-            nearestVal += 500
-            valCalc -=500
-        print(valCalc)
-    # end nearest 500
-    elif nearest == 100: # if searching for 100
-        while valCalc >= 90 or (negative and valCalc >= 40): # below 90, rn uses 50 value
-            nearestVal += 100
-            valCalc -=100
-        print(valCalc)
-    # end nearest 100
-    elif nearest == 50 and not negative: # if searching for nearest 50
-        while valCalc >= 40: # below 40, rn uses 10 value
-            nearestVal += 50
-            valCalc -=50
-        print(valCalc)
-    # end nearest 50
-    elif nearest == 10 or (negative and valCalc >= 4): # if searching for nearest 10
-        while valCalc >= 9: # below 9, rn uses 5 value
-            nearestVal += 10
-            valCalc -=10
-        print(valCalc)
-    # end nearest 10
-    elif nearest == 5: # if searching for nearest 5
-        while valCalc >= 4: # below 4, rn uses 1 value
-            nearestVal += 5
-            valCalc -=5
-        print(valCalc)
-    if negative:
-        return (nearestVal*-1)
-    else:
-        return nearestVal
-# end of function
+    ohundreds = math.floor(decimal/100) # detect 100's
+    decimal %= 100 #remove 100's
 
-def decToRN(decimal): # Decimal to Roman Numeral [STUB]
-    RomanNumeral=""
-    nearest = toNearest(decimal, 1000)
-    while nearest != 0:
-        nearest -= 1000
-        decimal -= 1000
-        RomanNumeral += "M"
-    # end of 1000 while loop
+    fifty = math.floor(decimal/50) #detect a 50
+    decimal %= 50 #remove 50
 
-    nearest = toNearest(decimal, 500)
-    while nearest != 0:
-        if nearest > 0:
-            nearest -= 500
-            decimal -= 500
-            RomanNumeral += "D"
-        else:
-            nearest += 500
-            decimal += 500
-            RomanNumeral = "D" + RomanNumeral
-    # end of 500 while loop
+    tens = math.floor(decimal/10) #detect 10's
+    decimal %= 10 #remove 10's
 
-    nearest = toNearest(decimal, 100)
-    while nearest != 0:
-        if nearest > 0:
-            nearest -= 100
-            decimal -= 100
-            RomanNumeral += "C"
-        else:
-            nearest += 100
-            decimal += 100
-            RomanNumeral = "C" + RomanNumeral
-    # end of 100 while loop
+    five = math.floor(decimal/5) #detect a 5
+    decimal %= 5 # remove a 5
 
-    nearest = toNearest(decimal, 50)
-    while nearest != 0:
-        if nearest > 0:
-            nearest -= 50
-            decimal -= 50
-            RomanNumeral += "L"
-        else:
-            nearest += 50
-            decimal += 50
-            RomanNumeral = "L" + RomanNumeral
-    # end of 50 while loop
-
-    nearest = toNearest(decimal, 10)
-    while nearest != 0:
-        if nearest > 0:
-            nearest -= 10
-            decimal -= 10
-            RomanNumeral += "X"
-        else:
-            nearest += 10
-            decimal += 10
-            RomanNumeral = "X" + RomanNumeral
-    # end of 10 while loop
-
-    nearest = toNearest(decimal, 5)
-    while nearest != 0:
-        if nearest > 0:
-            nearest -= 5
-            decimal -= 5
-            RomanNumeral += "V"
-        else:
-            nearest += 5
-            decimal += 5
-            RomanNumeral = "V" + RomanNumeral
-    # end of 5 while loop
-
-    while decimal != 0:
-        if decimal > 0:
-            decimal -= 1
-            RomanNumeral += "I"
-        else:
-            decimal += 1
-            RomanNumeral = "I" + RomanNumeral
-    return RomanNumeral
-# end of function
-
-def UI(): # UI logic [STUB]
-    mainScene = tkinter.tk()
-    # UI Elements go here
-    mainScene.mainloop()
-    pass
+    #use string multiplication to generate rough roman numeral
+    numeral = (thousands*"M") + (fhundreds*"D") + (ohundreds*"C") + (fifty*"L") + (tens*"X") + (five*"V") + (decimal*"I")
+    #refine roman numeral (include subtractives, IV instead of IIII):
+    #detect if there are more than 4 of the following in a row
+    #C's
+    repeatFound = numeral.find("CCCC") #begin post processing on rough numeral by checking for unsubtractive digits in the 100's
+    if repeatFound != -1:
+        numeral = numeral.replace("DCCCC", "CM") #replace with subtractive digits (starting with 900, then 400)
+        numeral = numeral.replace("CCCC", "CD")
+    #X's
+    repeatFound = numeral.find("XXXX") #post processing part 2: unsubtractive digits in 10's
+    if repeatFound != -1:
+        numeral = numeral.replace("LXXXX", "XC") #replace with subtractives (starting with 90, then 40)
+        numeral = numeral.replace("XXXX", "XL")
+    #I's
+    repeatFound = numeral.find("IIII") #finish post processing with unsubtractive digits in the 1's
+    if repeatFound != -1:
+        numeral = numeral.replace("VIIII", "IX") #replace with unsubtractives (starting with 9, then 4)
+        numeral = numeral.replace("IIII", "IV")
+    return numeral #return fully processed numeral
 #end of function
 
-def main(): # main driver [testing STUB]
-    dec = int(input("Enter Decimal number: "))
-    print("That is {0} in Roman Numerals.".format(decToRN(dec)))
+def toRNControl():
+    global decimalInput
+    input=decimalInput.get()
+    popup=tkinter.Tk()
+    tkinter.Label(popup, text=(str(input)+" is "+str(decToRN(input))+" in Roman Numerals")).grid(row=0,column=0)
+    tkinter.Button(popup,text="Ok",command=lambda:quitButton(popup)).grid(row=1,column=0)
+
+def toDecControl():
+    global romanNumeralInput
+    input=romanNumeralInput.get()
+    popup=tkinter.Tk()
+    tkinter.Label(popup, text=(str(input)+" is "+str(rnToDec(input))+" in Decimal")).grid(row=0,column=0)
+    tkinter.Button(popup,text="Ok",command=lambda:quitButton(popup)).grid(row=1,column=0)
+
+def quitButton(window): # pass in a scene to close
+    window.destroy() # close passed in scene
+
+def main(): # main driver, contains UI logic
+    global mainScene
+    global decimalInput
+    global romanNumeralInput
+    mainScene.title("Decimal-Roman Numeral Converter")
+    tkinter.Label(mainScene, text="Enter Numbers Below").grid(row=0,column=0)
+    tkinter.Label(mainScene, text="Put Decimal here").grid(row=1,column=0)
+    tkinter.Label(mainScene, text="Put Roman Numeral here").grid(row=1,column=1)
+    tkinter.Entry(mainScene, textvariable = decimalInput).grid(row=2,column=0)
+    tkinter.Entry(mainScene, textvariable = romanNumeralInput).grid(row=2,column=1)
+    tkinter.Button(mainScene, text="Convert to Roman Numeral",command=lambda:toRNControl()).grid(row=3,column=0)
+    tkinter.Button(mainScene, text="Convert to Decimal",command=lambda:toDecControl()).grid(row=3,column=1)
+    tkinter.Button(mainScene, text="Quit",command=lambda:quitButton(mainScene)).grid(row=4,column=0)
+    mainScene.mainloop()
 # end of function
 
 main()
