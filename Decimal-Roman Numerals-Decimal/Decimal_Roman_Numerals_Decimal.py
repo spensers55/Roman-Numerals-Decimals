@@ -25,7 +25,7 @@ def rnToDec(romanNumeral): # Roman Numeral to Decimal
         currentVal = getValOfChar(romanNumeral[currentLoc]) # function call to get numeric value
 
         if currentVal == romanNumeral[currentLoc]: # if it doesn't have a numerical value
-            return currentVal # send problem forward
+            return romanNumeral[currentLoc] + " is an invalid character" # send problem forward
 
         if currentVal >= previousVal: # if current value is larger than previous,...
             previousVal=currentVal # match previous to new largest
@@ -36,7 +36,7 @@ def rnToDec(romanNumeral): # Roman Numeral to Decimal
 
         currentLoc-=1 # decrement iterator
     #end while loop
-    return finalValue
+    return romanNumeral + " is " + str(finalValue) + " in decimal"
 # end of function
 
 #Get value of character
@@ -67,6 +67,7 @@ def getValOfChar(char): # used to convert roman numeral characters to decimal va
 # Returns numeral: a number in roman numeral format converted by the function
 # Uses: math class
 def decToRN(decimal):
+    originalVal = decimal
     thousands = math.floor(decimal/1000) #use division to find quantity of 1000's
     decimal %= 1000 #use modulus division to remove 1000's level of precision
 
@@ -104,22 +105,32 @@ def decToRN(decimal):
     if repeatFound != -1:
         numeral = numeral.replace("VIIII", "IX") #replace with unsubtractives (starting with 9, then 4)
         numeral = numeral.replace("IIII", "IV")
-    return numeral #return fully processed numeral
+    return str(originalVal) + " is " + numeral + " in Roman Numerals" #return output string
 #end of function
 
 def toRNControl():
-    global decimalInput
-    input=decimalInput.get()
-    popup=tkinter.Tk()
-    tkinter.Label(popup, text=(str(input)+" is "+str(decToRN(input))+" in Roman Numerals")).grid(row=0,column=0)
+    popup=tkinter.Tk() #create tkinter window
+    global decimalInput #load global variable
+    try:
+        input=decimalInput.get() #fish for exceptions to validate input
+    except:
+        tkinter.Label(popup, text=("Please Enter a valid number")).grid(row=0,column=0) #the window if exception is thrown
+        tkinter.Button(popup,text="Ok",command=lambda:quitButton(popup)).grid(row=1,column=0)
+        return
+    
+    tkinter.Label(popup, text=(str(decToRN(input)))).grid(row=0,column=0) #the window if exception is not thrown
     tkinter.Button(popup,text="Ok",command=lambda:quitButton(popup)).grid(row=1,column=0)
+    if input>3999: #disclaimer about number size
+        tkinter.Label(popup, text="Your number is larger than standard Roman Numerals can display. It may have a lot of M's.").grid(row=2,column=0)
+#end of function
 
 def toDecControl():
-    global romanNumeralInput
+    global romanNumeralInput #load global variable
     input=romanNumeralInput.get()
-    popup=tkinter.Tk()
-    tkinter.Label(popup, text=(str(input)+" is "+str(rnToDec(input))+" in Decimal")).grid(row=0,column=0)
+    popup=tkinter.Tk() #create tkinter window
+    tkinter.Label(popup, text=(str(rnToDec(input)))).grid(row=0,column=0) #populate window
     tkinter.Button(popup,text="Ok",command=lambda:quitButton(popup)).grid(row=1,column=0)
+#end of function
 
 def quitButton(window): # pass in a scene to close
     window.destroy() # close passed in scene
